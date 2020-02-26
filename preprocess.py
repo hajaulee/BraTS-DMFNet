@@ -14,17 +14,17 @@ modalities = ('flair', 't1ce', 't1', 't2')
 
 
 train_set = {
-        'root': '/data2/liuxiaopeng/Data/BraTS2018/Train',
+        'root': '../data/2018/MICCAI_BraTS_2018_Data_Training',
         'flist': 'all.txt',
         }
 
 valid_set = {
-        'root': '/data2/liuxiaopeng/Data/BraTS2018/Valid',
+        'root': '../data/2018/MICCAI_BraTS_2018_Data_Validation',
         'flist': 'valid.txt',
         }
 
 test_set = {
-        'root': '/data2/liuxiaopeng/Data/BraTS2018/Test',
+        'root': '../data/2018/MICCAI_BraTS_2018_Data_TTest',
         'flist': 'test.txt',
         }
 
@@ -86,7 +86,7 @@ def process_f32(path):
     savepkl(data=(images, label),path=output)
 
 def doit(dset):
-    root, has_label = dset['root']
+    root = dset['root']
     file_list = os.path.join(root, dset['flist'])
     subjects = open(file_list).read().splitlines()
     names = [sub.split('/')[-1] for sub in subjects]
