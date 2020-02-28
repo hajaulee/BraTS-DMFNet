@@ -91,7 +91,7 @@ def main():
         collate_fn=train_set.collate,
         sampler=train_sampler,
         num_workers=args.workers,
-        pin_memory=False,
+        pin_memory=True,
         worker_init_fn=init_fn)
 
     start = time.time()

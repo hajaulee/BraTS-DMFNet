@@ -108,7 +108,7 @@ def main():
         shuffle=False,
         collate_fn=valid_set.collate,
         num_workers=10,
-        pin_memory=False)
+        pin_memory=True)
 
     if args.is_out:
         out_dir = './output/{}'.format(args.cfg)

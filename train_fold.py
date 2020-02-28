@@ -86,7 +86,7 @@ def main():
         train_set,
         batch_size=args.batch_size,
         collate_fn=train_set.collate, sampler=train_sampler,
-        num_workers=args.workers, pin_memory=False, worker_init_fn=init_fn)
+        num_workers=args.workers, pin_memory=True, worker_init_fn=init_fn)
 
     if args.valid_list:
         valid_list = os.path.join(args.train_data_dir, args.valid_list)
@@ -101,7 +101,7 @@ def main():
             shuffle=False,
             collate_fn=valid_set.collate,
             num_workers=args.workers,
-            pin_memory=False)
+            pin_memory=True)
 
     start = time.time()
 
