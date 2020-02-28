@@ -7,7 +7,7 @@ import torch
 from scipy import ndimage
 from scipy.ndimage import rotate
 
-from .rand import Constant
+from .rand import Constant, Uniform, Gaussian
 
 
 class Base(object):
