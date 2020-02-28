@@ -1,8 +1,7 @@
-#coding=utf-8
+# coding=utf-8
 import argparse
-import os
-import time
 import logging
+import os
 import random
 
 import torch
@@ -16,7 +15,7 @@ import numpy as np
 
 import models
 from data import datasets
-from utils import Parser,str2bool
+from utils import Parser, str2bool
 
 from predict import validate_softmax
 
@@ -25,7 +24,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-cfg', '--cfg', default='3DUNet_dice_fold0', required=True, type=str,
                     help='Your detailed configuration of the network')
 
-parser.add_argument('-mode', '--mode', default=0, required=True, type=int,choices=[0,1,2],
+parser.add_argument('-mode', '--mode', default=0, required=True, type=int, choices=[0, 1, 2],
                     help='0 for cross-validation on the training set; '
                          '1 for validing on the validation set; '
                          '2 for testing on the testing set.')
@@ -34,7 +33,6 @@ parser.add_argument('-gpu', '--gpu', default='0,1,2,3', type=str)
 
 parser.add_argument('-is_out', '--is_out', default=False, type=str2bool,
                     help='If ture, output the .nii file')
-
 
 parser.add_argument('-verbose', '--verbose', default=True, type=str2bool,
                     help='If True, print more infomation of the debuging output')
@@ -45,14 +43,14 @@ parser.add_argument('-use_TTA', '--use_TTA', default=False, type=str2bool,
 parser.add_argument('-postprocess', '--postprocess', default=False, type=str2bool,
                     help='Another postprocess approach.')
 
-parser.add_argument('-save_format', '--save_format', default='nii', choices=['nii','npy'], type=str,
+parser.add_argument('-save_format', '--save_format', default='nii', choices=['nii', 'npy'], type=str,
                     help='[nii] for submission; [npy] for models ensemble')
 
 parser.add_argument('-snapshot', '--snapshot', default=False, type=str2bool,
                     help='If True, saving the snopshot figure of all samples.')
 
 parser.add_argument('-restore', '--restore', default=argparse.SUPPRESS, type=str,
-                    help='The path to restore the model.') # 'model_epoch_300.pth'
+                    help='The path to restore the model.')  # 'model_epoch_300.pth'
 
 path = os.path.dirname(__file__)
 
@@ -60,7 +58,8 @@ args = parser.parse_args()
 args = Parser(args.cfg, log='train').add_args(args)
 args.gpu = str(args.gpu)
 ckpts = args.makedir()
-args.resume = os.path.join(ckpts, args.restore) # specify the epoch
+args.resume = os.path.join(ckpts, args.restore)  # specify the epoch
+
 
 def main():
     # setup environments and seeds
@@ -72,12 +71,12 @@ def main():
     random.seed(args.seed)
     np.random.seed(args.seed)
 
-    Network = getattr(models, args.net) #
+    Network = getattr(models, args.net)  #
     model = Network(**args.net_params)
 
     model = torch.nn.DataParallel(model).cuda()
     print(args.resume)
-    assert os.path.isfile(args.resume),"no checkpoint found at {}".format(args.resume)
+    assert os.path.isfile(args.resume), "no checkpoint found at {}".format(args.resume)
     print("=> loading checkpoint '{}'".format(args.resume))
     checkpoint = torch.load(args.resume)
     args.start_iter = checkpoint['iter']
@@ -99,9 +98,9 @@ def main():
     else:
         raise ValueError
 
-    Dataset = getattr(datasets, args.dataset) #
+    Dataset = getattr(datasets, args.dataset)  #
     valid_list = os.path.join(root_path, args.valid_list)
-    valid_set = Dataset(valid_list, root=root_path,for_train=False, transforms=args.test_transforms)
+    valid_set = Dataset(valid_list, root=root_path, for_train=False, transforms=args.test_transforms)
 
     valid_loader = DataLoader(
         valid_set,
@@ -113,12 +112,12 @@ def main():
 
     if args.is_out:
         out_dir = './output/{}'.format(args.cfg)
-        os.makedirs(os.path.join(out_dir,'submission'),exist_ok=True)
-        os.makedirs(os.path.join(out_dir,'snapshot'),exist_ok=True)
+        os.makedirs(os.path.join(out_dir, 'submission'), exist_ok=True)
+        os.makedirs(os.path.join(out_dir, 'snapshot'), exist_ok=True)
     else:
         out_dir = ''
 
-    logging.info('-'*50)
+    logging.info('-' * 50)
     logging.info(msg)
 
     with torch.no_grad():
@@ -127,7 +126,7 @@ def main():
             model,
             cfg=args.cfg,
             savepath=out_dir,
-            save_format = args.save_format,
+            save_format=args.save_format,
             names=valid_set.names,
             scoring=is_scoring,
             verbose=args.verbose,
