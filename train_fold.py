@@ -107,8 +107,8 @@ def main():
 
     enum_batches = len(train_set) / float(args.batch_size)  # nums_batch per epoch
     args.schedule = {int(k * enum_batches): v for k, v in args.schedule.items()}  # 17100
-    args.save_freq = int(enum_batches * args.save_freq)
-    args.valid_freq = int(enum_batches * args.valid_freq)
+    # args.save_freq = int(enum_batches * args.save_freq)
+    # args.valid_freq = int(enum_batches * args.valid_freq)
 
     losses = AverageMeter()
     torch.set_grad_enabled(True)
