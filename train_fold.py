@@ -100,7 +100,7 @@ def main():
             batch_size=1,
             shuffle=False,
             collate_fn=valid_set.collate,
-            num_workers=4,
+            num_workers=args.workers,
             pin_memory=False)
 
     start = time.time()
