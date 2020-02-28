@@ -154,7 +154,7 @@ def main():
                 file_name)
 
         # validation
-        if (i + 1) % int(enum_batches * args.save_freq) == 0 \
+        if (i + 1) % int(enum_batches * args.valid_freq) == 0 \
                 or (i + 1) % int(enum_batches * (args.num_epochs - 1)) == 0 \
                 or (i + 1) % int(enum_batches * (args.num_epochs - 2)) == 0 \
                 or (i + 1) % int(enum_batches * (args.num_epochs - 3)) == 0 \
