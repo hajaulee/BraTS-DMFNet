@@ -16,7 +16,7 @@ seed: 1024
 batch_size: 8
 num_epochs: 500
 save_freq: 50     # save every 50 epochs
-valid_freq: 100   # validate every 10 epochs
+valid_freq: 10   # validate every 10 epochs
 start_iter: 0
 
 opt: Adam
