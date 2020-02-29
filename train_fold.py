@@ -49,9 +49,10 @@ def main():
     random.seed(args.seed)
     np.random.seed(args.seed)
 
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     Network = getattr(models, args.net)  #
     model = Network(**args.net_params)
-    model = torch.nn.DataParallel(model).cuda()
+    model = torch.nn.DataParallel(model).to(device)
     optimizer = getattr(torch.optim, args.opt)(model.parameters(), **args.opt_params)
     criterion = getattr(criterions, args.criterion)
 
