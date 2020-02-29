@@ -28,6 +28,7 @@ RUN cd /tmp && \
     python get-pip.py && rm get-pip.py
 
 RUN pip install --upgrade pip
+RUN pip install pyyaml
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONIOENCODING=UTF-8 LANG=C.UTF-8 LC_ALL=C.UTF-8
 
