@@ -45,7 +45,7 @@ def main():
     assert torch.cuda.is_available(), "Currently, we only support CUDA version"
 
     torch.manual_seed(args.seed)
-    torch.cuda.manual_seed(args.seed)
+    # torch.cuda.manual_seed(args.seed)
     random.seed(args.seed)
     np.random.seed(args.seed)
 
@@ -122,7 +122,8 @@ def main():
 
         adjust_learning_rate(optimizer, epoch, args.num_epochs, args.opt_params.lr)
 
-        data = [t.cuda(non_blocking=True) for t in data]
+        # data = [t.cuda(non_blocking=True) for t in data]
+        data = [t.to(device) for t in data]
         x, target = data[:2]
 
         output = model(x)

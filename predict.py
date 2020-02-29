@@ -2,6 +2,7 @@ import logging
 import os
 import time
 
+import torch
 import nibabel as nib
 import numpy as np
 import scipy.misc
@@ -11,7 +12,7 @@ import torch.nn.functional as F
 cudnn.benchmark = True
 
 path = os.path.dirname(__file__)
-
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # dice socre is equal to f1 score
 def dice_score(o, t, eps=1e-8):
@@ -70,6 +71,7 @@ def validate_softmax(
                      :T].numpy() if scoring else None  # when validing, make sure that argument 'scoring' must be false, else it raise a error!
 
         if cpu_only == False:
+            data = [t.to(device) for t in data]
             data = [t.cuda(non_blocking=True) for t in data]
         x, target = data[:2]
 
