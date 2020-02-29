@@ -106,3 +106,4 @@ venv.bak/
 # logs and checkpoints
 ckpts/*
 logs/*
+*__pycache__*
