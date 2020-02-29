@@ -1,0 +1,11 @@
+numpy
+torch
+torchvision
+nibabel
+pyyaml
+scikit-learn
+scikit-image
+pickle
+scipy
+setproctitle
+tensorboardX

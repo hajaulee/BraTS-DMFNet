@@ -30,6 +30,7 @@ parser.add_argument('-cfg', '--cfg', default='3DUNet_dice_fold0', required=True,
 #                     help='Supprot one GPU & multiple GPUs.')
 parser.add_argument('-batch_size', '--batch_size', default=1, type=int, help='Batch size')
 parser.add_argument('-restore', '--restore', default='model_last.pth', type=str)  # model_last.pth
+parser.add_argument('-output_path', '--output_path', default='ckpts', type=str)
 
 path = os.path.dirname(__file__)
 
