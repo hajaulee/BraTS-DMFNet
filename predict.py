@@ -72,7 +72,7 @@ def validate_softmax(
 
         if cpu_only == False:
             data = [t.to(device) for t in data]
-            data = [t.cuda(non_blocking=True) for t in data]
+            # data = [t.cuda(non_blocking=True) for t in data]
         x, target = data[:2]
 
         # compute output

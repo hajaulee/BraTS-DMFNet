@@ -47,6 +47,8 @@ args.resume = os.path.join(ckpts, args.restore)  # specify the epoch
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     assert torch.cuda.is_available(), "Currently, we only support CUDA version"
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed(args.seed)
     random.seed(args.seed)
@@ -54,7 +56,7 @@ def main():
 
     Network = getattr(models, args.net)  #
     model = Network(**args.net_params)
-    model = torch.nn.DataParallel(model).cuda()
+    model = torch.nn.DataParallel(model).to(device)
 
     optimizer = getattr(torch.optim, args.opt)(model.parameters(), **args.opt_params)
     criterion = getattr(criterions, args.criterion)
