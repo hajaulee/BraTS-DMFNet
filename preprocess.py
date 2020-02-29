@@ -82,7 +82,7 @@ def process_f32(path):
         images[..., k] = x
 
     output = path + 'data_f32.pkl'
-    print("saving:",output)
+    # print("saving:",output)
     savepkl(data=(images, label),path=output)
 
 def doit(dset):
@@ -94,8 +94,16 @@ def doit(dset):
     for path in paths:
         process_f32(path)
 
-doit(train_set)
-doit(valid_set)
+# doit(train_set)
+# doit(valid_set)
 # doit(test_set)
 
+def convert(dset):
+    from tqdm import tqdm
+    subjects = os.listdir(dset)
+    paths = [os.path.join(dset, name, name + '_') for name in subjects]
+    for i in tqdm(range(len(paths))):
+        process_f32(paths[i])
+
+convert('/home/hajau/BraTS/MICCAI_BraTS_2019_Data_Training/HGG/')
 
