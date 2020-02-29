@@ -27,8 +27,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('-cfg', '--cfg', default='1_EESPNet_16x_PRelu_GDL_all', required=True, type=str,
                     help='Your detailed configuration of the network')
-parser.add_argument('-gpu', '--gpu', default='0', type=str, required=True,
-                    help='Supprot one GPU & multiple GPUs.')
+# parser.add_argument('-gpu', '--gpu', default='0', type=str, required=True,
+#                     help='Supprot one GPU & multiple GPUs.')
 parser.add_argument('-batch_size', '--batch_size', default=1, type=int,
                     help='Batch size')
 parser.add_argument('-restore', '--restore', default='model_last.pth', type=str)  # model_last.pth
@@ -45,7 +45,7 @@ args.resume = os.path.join(ckpts, args.restore)  # specify the epoch
 
 
 def main():
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+    # os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     assert torch.cuda.is_available(), "Currently, we only support CUDA version"
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

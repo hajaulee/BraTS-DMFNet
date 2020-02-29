@@ -29,7 +29,7 @@ parser.add_argument('-mode', '--mode', default=0, required=True, type=int, choic
                          '1 for validing on the validation set; '
                          '2 for testing on the testing set.')
 
-parser.add_argument('-gpu', '--gpu', default='0,1,2,3', type=str)
+# parser.add_argument('-gpu', '--gpu', default='0,1,2,3', type=str)
 
 parser.add_argument('-is_out', '--is_out', default=False, type=str2bool,
                     help='If ture, output the .nii file')
@@ -56,14 +56,14 @@ path = os.path.dirname(__file__)
 
 args = parser.parse_args()
 args = Parser(args.cfg, log='train').add_args(args)
-args.gpu = str(args.gpu)
+# args.gpu = str(args.gpu)
 ckpts = args.makedir()
 args.resume = os.path.join(ckpts, args.restore)  # specify the epoch
 
 
 def main():
     # setup environments and seeds
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+    # os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     assert torch.cuda.is_available(), "Currently, we only support CUDA version"
 
     torch.manual_seed(args.seed)
