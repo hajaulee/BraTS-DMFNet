@@ -102,3 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# logs and checkpoints
+ckpts/*
+logs/*
