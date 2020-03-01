@@ -32,6 +32,8 @@ parser.add_argument('-cfg', '--cfg', default='1_EESPNet_16x_PRelu_GDL_all', requ
 parser.add_argument('-batch_size', '--batch_size', default=1, type=int,
                     help='Batch size')
 parser.add_argument('-restore', '--restore', default='model_last.pth', type=str)  # model_last.pth
+parser.add_argument('-output_path', '--output_path', default='ckpts', type=str)
+parser.add_argument('-prefix_path', '--prefix_path', default='', type=str)
 
 path = os.path.dirname(__file__)
 
@@ -81,6 +83,8 @@ def main():
     # Data loading code
     Dataset = getattr(datasets, args.dataset)  #
 
+    if args.prefix_path:
+        args.train_data_dir = os.path.join(args.prefix_path, args.train_data_dir)
     train_list = os.path.join(args.train_data_dir, args.train_list)
     train_set = Dataset(train_list, root=args.train_data_dir, for_train=True, transforms=args.train_transforms)
 

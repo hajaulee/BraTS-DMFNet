@@ -81,7 +81,7 @@ class SagemakerInference(object):
         os.system('nvidia-smi')
 
         print("RUN TRAINING FILE")
-        subprocess.run('CUDA_VISIBLE_DEVICES=0 python train_fold.py --output_path=/opt/ml/output/ --cfg=DMFNet_GDL_fold --batch_size=8', shell=True)
+        subprocess.run('CUDA_VISIBLE_DEVICES=0 python train_fold.py --prefix_path=/opt/ml/input/data/train/ --output_path=/opt/ml/output/ --cfg=DMFNet_GDL_fold --batch_size=8', shell=True)
 
 
 if __name__ == '__main__':
