@@ -69,7 +69,7 @@ class SagemakerInference(object):
         # print('current directory:', os.listdir('./'))
         print("Unzip file...")
         os.makedirs('../data/2018')
-        subprocess.run("unzip -qq /opt/ml/input/data/train/data.zip", shell=True)
+        subprocess.run("unzip -qq /opt/ml/input/data/train/data.zip -d /opt/ml/input/data/train/data", shell=True)
         # subprocess.run("unzip -qq /opt/ml/input/data/train/MICCAI_BraTS_2018_Data_Validation.zip -d ../data/2018/MICCAI_BraTS_2018_Data_Validation", shell=True)
         # print(os.listdir('..'))
         # print(os.listdir('../data'))
