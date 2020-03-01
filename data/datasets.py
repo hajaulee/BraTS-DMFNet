@@ -1,5 +1,5 @@
 import os
-
+import sys
 import numpy as np
 import torch
 from torch.utils.data import Dataset
@@ -7,7 +7,8 @@ from torch.utils.data import Dataset
 from .data_utils import pkload
 from .rand import *
 from .transforms import *
-from ..preprocess import process_f32
+sys.path.append('..')
+from preprocess import process_f32
 
 class BraTSDataset(Dataset):
     def __init__(self, list_file, root='', for_train=False, transforms=''):
