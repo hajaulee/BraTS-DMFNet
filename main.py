@@ -76,8 +76,8 @@ class SagemakerInference(object):
         print(os.listdir('../data/2018'))
 
         # split and preprocessing
-        subprocess.run('python preprocess.py', shell=True)
         subprocess.run('python split.py', shell=True)
+        subprocess.run('python preprocess.py', shell=True)
         os.system('nvidia-smi')
 
         print("RUN TRAINING FILE")
