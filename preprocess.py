@@ -3,30 +3,32 @@ Load the 'nii' file and save as pkl file.
 Carefully check your path please.
 """
 
-import pickle
 import os
-import numpy as np
+import pickle
+
 import nibabel as nib
+import numpy as np
+
 from utils import Parser
 
 args = Parser()
 modalities = ('flair', 't1ce', 't1', 't2')
 
-
 train_set = {
-        'root': '/data2/liuxiaopeng/Data/BraTS2018/Train',
-        'flist': 'all.txt',
-        }
+    'root': '../data/2018/MICCAI_BraTS_2018_Data_Training',
+    'flist': 'all.txt',
+}
 
 valid_set = {
-        'root': '/data2/liuxiaopeng/Data/BraTS2018/Valid',
-        'flist': 'valid.txt',
-        }
+    'root': '../data/2018/MICCAI_BraTS_2018_Data_Validation',
+    'flist': 'valid.txt',
+}
 
 test_set = {
-        'root': '/data2/liuxiaopeng/Data/BraTS2018/Test',
-        'flist': 'test.txt',
-        }
+    'root': '../data/2018/MICCAI_BraTS_2018_Data_TTest',
+    'flist': 'test.txt',
+}
+
 
 def nib_load(file_name):
     if not os.path.exists(file_name):
@@ -39,10 +41,10 @@ def nib_load(file_name):
 
 
 def normalize(image, mask=None):
-    assert len(image.shape) == 3 # shape is [H,W,D]
-    assert image[0,0,0] == 0 # check the background is zero
+    assert len(image.shape) == 3  # shape is [H,W,D]
+    assert image[0, 0, 0] == 0  # check the background is zero
     if mask is not None:
-        mask = (image>0) # The bg is zero
+        mask = (image > 0)  # The bg is zero
 
     mean = image[mask].mean()
     std = image[mask].std()
@@ -50,7 +52,8 @@ def normalize(image, mask=None):
     image[mask] = (image[mask] - mean) / std
     return image
 
-def savepkl(data,path):
+
+def savepkl(data, path):
     with open(path, 'wb') as f:
         pickle.dump(data, f)
 
@@ -65,12 +68,12 @@ def process_f32(path):
     mask = images.sum(-1) > 0
 
     for k in range(4):
-        x = images[..., k] #
-        y = x[mask] #
-        
-        lower = np.percentile(y, 0.2) # 算分位数
+        x = images[..., k]  #
+        y = x[mask]  #
+
+        lower = np.percentile(y, 0.2)  # 算分位数
         upper = np.percentile(y, 99.8)
-        
+
         x[mask & (x < lower)] = lower
         x[mask & (x > upper)] = upper
 
@@ -82,11 +85,13 @@ def process_f32(path):
         images[..., k] = x
 
     output = path + 'data_f32.pkl'
-    # print("saving:",output)
-    savepkl(data=(images, label),path=output)
+    print("saving:", output)
+    savepkl(data=(images, label), path=output)
+    return images, label
+
 
 def doit(dset):
-    root, has_label = dset['root']
+    root = dset['root']
     file_list = os.path.join(root, dset['flist'])
     subjects = open(file_list).read().splitlines()
     names = [sub.split('/')[-1] for sub in subjects]
@@ -94,16 +99,7 @@ def doit(dset):
     for path in paths:
         process_f32(path)
 
-# doit(train_set)
-# doit(valid_set)
+
+doit(train_set)
+doit(valid_set)
 # doit(test_set)
-
-def convert(dset):
-    from tqdm import tqdm
-    subjects = os.listdir(dset)
-    paths = [os.path.join(dset, name, name + '_') for name in subjects]
-    for i in tqdm(range(len(paths))):
-        process_f32(paths[i])
-
-convert('/home/hajau/BraTS/MICCAI_BraTS_2019_Data_Training/HGG/')
-

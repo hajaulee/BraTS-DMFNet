@@ -2,14 +2,16 @@
 adapted from  Detectron config file (https://github.com/facebookresearch/Detectron)
 """
 
-import os
-import yaml
 import copy
+import logging
+import os
 from ast import literal_eval
 from fractions import Fraction
-import logging
+
+import yaml
 
 path = os.path.dirname(__file__)
+
 
 class AttrDict(dict):
     def __getattr__(self, name):
@@ -71,6 +73,7 @@ def parse(d):
         return d
     return AttrDict({k: parse(v) for k, v in d.items()})
 
+
 def load(fname):
     with open(fname, 'r') as f:
         ret = parse(yaml.load(f))
@@ -86,11 +89,12 @@ def setup(args, log):
     lfile = os.path.join(ldir, lfile)
 
     logging.basicConfig(level=logging.INFO,
-            format='%(asctime)s %(message)s', filename=lfile)
+                        format='%(asctime)s %(message)s', filename=lfile)
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     console.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
     logging.getLogger('').addHandler(console)
+
 
 class Parser(AttrDict):
     def __init__(self, cfg_name='', log=''):
@@ -106,7 +110,7 @@ class Parser(AttrDict):
     def add_cfg(self, cfg, args=None, update=False):
         if os.path.isfile(cfg):
             fname = cfg
-            cfg   = os.path.splitext(os.path.basename(cfg))[0]
+            cfg = os.path.splitext(os.path.basename(cfg))[0]
         else:
             fname = os.path.join(path, '../experiments', cfg + '.yaml')
 
