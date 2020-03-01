@@ -7,7 +7,7 @@ from torch.utils.data import Dataset
 from .data_utils import pkload
 from .rand import *
 from .transforms import *
-
+from ..preprocess import process_f32
 
 class BraTSDataset(Dataset):
     def __init__(self, list_file, root='', for_train=False, transforms=''):
@@ -26,7 +26,10 @@ class BraTSDataset(Dataset):
 
     def __getitem__(self, index):
         path = self.paths[index]
-        x, y = pkload(path + 'data_f32.pkl')
+        if os.path.exists(path + 'data_f32.pkl'):
+            x, y = pkload(path + 'data_f32.pkl')
+        else:
+            x, y = process_f32(path, save=False)
         # print(x.shape, y.shape)#(240, 240, 155, 4) (240, 240, 155)
         # transforms work with nhwtc
         x, y = x[None, ...], y[None, ...]

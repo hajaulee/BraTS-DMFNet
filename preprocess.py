@@ -58,7 +58,7 @@ def savepkl(data, path):
         pickle.dump(data, f)
 
 
-def process_f32(path):
+def process_f32(path, save=True):
     """ Set all Voxels that are outside of the brain mask to 0"""
     label = np.array(nib_load(path + 'seg.nii.gz'), dtype='uint8', order='C')
     images = np.stack([
@@ -83,10 +83,10 @@ def process_f32(path):
         x /= y.std()
 
         images[..., k] = x
-
-    output = path + 'data_f32.pkl'
-    print("saving:", output)
-    savepkl(data=(images, label), path=output)
+    if save:
+        output = path + 'data_f32.pkl'
+        print("saving:", output)
+        savepkl(data=(images, label), path=output)
     return images, label
 
 
