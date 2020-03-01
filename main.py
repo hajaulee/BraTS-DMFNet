@@ -71,9 +71,9 @@ class SagemakerInference(object):
         os.makedirs('../data/2018')
         subprocess.run("unzip -qq /opt/ml/input/data/train/data.zip -d /opt/ml/input/data/train/data", shell=True)
         # subprocess.run("unzip -qq /opt/ml/input/data/train/MICCAI_BraTS_2018_Data_Validation.zip -d ../data/2018/MICCAI_BraTS_2018_Data_Validation", shell=True)
-        # print(os.listdir('..'))
-        # print(os.listdir('../data'))
-        # print(os.listdir('../data/2018'))
+        print(os.listdir('/opt/ml/input/data/train/'))
+        print(os.listdir('/opt/ml/input/data/train/data'))
+        print(os.listdir('/opt/ml/input/data/train/data/../data/2018'))
 
         # split and preprocessing
         # subprocess.run('python split.py', shell=True)
