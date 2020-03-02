@@ -5,7 +5,7 @@ Carefully check your path please.
 
 import os
 import pickle
-
+import sys
 import nibabel as nib
 import numpy as np
 
@@ -103,6 +103,7 @@ def doit(dset, limit=1):
         process_f32(path)
 
 if __name__ == "__main__":
-    doit(train_set, limit=.8)
-    doit(valid_set, limit=.2)
+    limit = float(sys.args[1])
+    doit(train_set, limit=limit)
+    doit(valid_set, limit=limit)
     # doit(test_set)
