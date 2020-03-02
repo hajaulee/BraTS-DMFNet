@@ -103,7 +103,7 @@ def doit(dset, limit=1):
     print("Total samples number:", len(paths))
     paths = paths[:int(limit*len(paths))]
     print("Limited samples number:", len(paths))
-    save(paths, dset['flist'], root)
+    write(paths, dset['flist'], root)
     for path in paths:
         process_f32(path)
 
