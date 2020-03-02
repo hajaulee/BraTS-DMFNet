@@ -98,12 +98,14 @@ def doit(dset, limit=1):
     root = dset['root']
     file_list = os.path.join(root, dset['flist'])
     subjects = open(file_list).read().splitlines()
+    
+    print("Total samples number:", len(subjects))
+    subjects = subjects[:int(limit*len(subjects))]
+    print("Limited samples number:", len(subjects))
+    write(subjects, dset['flist'], root)
+
     names = [sub.split('/')[-1] for sub in subjects]
     paths = [os.path.join(root, sub, name + '_') for sub, name in zip(subjects, names)]
-    print("Total samples number:", len(paths))
-    paths = paths[:int(limit*len(paths))]
-    print("Limited samples number:", len(paths))
-    write(paths, dset['flist'], root)
     for path in paths:
         process_f32(path)
 
