@@ -90,16 +90,19 @@ def process_f32(path, save=True):
     return images, label
 
 
-def doit(dset):
+def doit(dset, limit=1):
     root = dset['root']
     file_list = os.path.join(root, dset['flist'])
     subjects = open(file_list).read().splitlines()
     names = [sub.split('/')[-1] for sub in subjects]
     paths = [os.path.join(root, sub, name + '_') for sub, name in zip(subjects, names)]
+    print("Total samples number:", len(paths))
+    paths = paths[:int(limit*len(paths))]
+    print("Limited samples number:", len(paths))
     for path in paths:
         process_f32(path)
 
 if __name__ == "__main__":
-    doit(train_set)
-    doit(valid_set)
+    doit(train_set, limit=.8)
+    doit(valid_set, limit=.2)
     # doit(test_set)
