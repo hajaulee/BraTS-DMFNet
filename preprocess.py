@@ -103,7 +103,7 @@ def doit(dset, limit=1):
         process_f32(path)
 
 if __name__ == "__main__":
-    limit = float(sys.args[1])
+    limit = float(sys.argv[1])
     doit(train_set, limit=limit)
     doit(valid_set, limit=limit)
     # doit(test_set)
