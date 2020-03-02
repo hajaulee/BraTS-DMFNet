@@ -24,6 +24,7 @@ class BraTSDataset(Dataset):
         self.names = names
         self.paths = paths
         self.transforms = eval(transforms or 'Identity()')
+        print("{} with {} samples.".format('Train' if for_train else 'Valid', len(names)))
 
     def __getitem__(self, index):
         path = self.paths[index]

@@ -57,6 +57,10 @@ def savepkl(data, path):
     with open(path, 'wb') as f:
         pickle.dump(data, f)
 
+def write(data, fname, root):
+    fname = os.path.join(root, fname)
+    with open(fname, 'w') as f:
+        f.write('\n'.join(data))
 
 def process_f32(path, save=True):
     """ Set all Voxels that are outside of the brain mask to 0"""
@@ -99,6 +103,7 @@ def doit(dset, limit=1):
     print("Total samples number:", len(paths))
     paths = paths[:int(limit*len(paths))]
     print("Limited samples number:", len(paths))
+    save(paths, dset['flist'], root)
     for path in paths:
         process_f32(path)
 
