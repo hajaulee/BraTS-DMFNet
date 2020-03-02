@@ -31,6 +31,7 @@ class BraTSDataset(Dataset):
         if os.path.exists(path + 'data_f32.pkl'):
             x, y = pkload(path + 'data_f32.pkl')
         else:
+            print("Load miss data")
             x, y = process_f32(path, save=False)
         # print(x.shape, y.shape)#(240, 240, 155, 4) (240, 240, 155)
         # transforms work with nhwtc
