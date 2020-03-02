@@ -99,7 +99,7 @@ def doit(dset):
     for path in paths:
         process_f32(path)
 
-if if __name__ == "__main__":
+if __name__ == "__main__":
     doit(train_set)
     doit(valid_set)
     # doit(test_set)
