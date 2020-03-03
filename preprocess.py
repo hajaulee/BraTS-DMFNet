@@ -8,7 +8,7 @@ import pickle
 import sys
 import nibabel as nib
 import numpy as np
-
+import argparse
 from utils import Parser
 
 args = Parser()
@@ -94,7 +94,7 @@ def process_f32(path, save=True):
     return images, label
 
 
-def doit(dset, limit=1):
+def doit(dset, limit=1, change_size=False):
     root = dset['root']
     file_list = os.path.join(root, dset['flist'])
     subjects = open(file_list).read().splitlines()
@@ -110,7 +110,13 @@ def doit(dset, limit=1):
         process_f32(path)
 
 if __name__ == "__main__":
-    limit = float(sys.argv[1])
-    doit(train_set, limit=limit)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-limit', '--limit', default=1, type=float,
+                    help='Limit rate')
+    parser.add_argument('-change_size', '--change_size', default=False, type=bool,
+                    help='Save new dataset size')
+    ## parse arguments
+    args = parser.parse_args()
+    doit(train_set, limit=args.limit, change_size=args.change_size)
     # doit(valid_set, limit=limit)
     # doit(test_set)
