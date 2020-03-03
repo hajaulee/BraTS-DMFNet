@@ -102,8 +102,10 @@ def doit(dset, limit=1, change_size=False):
     print("Total samples number:", len(subjects))
     subjects = subjects[:int(limit*len(subjects))]
     print("Limited samples number:", len(subjects))
-    write(subjects, dset['flist'], root)
-
+    if change_size:
+        write(subjects, dset['flist'], root)
+    else:
+        print("No change in file list")
     names = [sub.split('/')[-1] for sub in subjects]
     paths = [os.path.join(root, sub, name + '_') for sub, name in zip(subjects, names)]
     for path in paths:
