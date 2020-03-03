@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-
+import time
 from .data_utils import pkload
 from .rand import *
 from .transforms import *
@@ -29,10 +29,13 @@ class BraTSDataset(Dataset):
     def __getitem__(self, index):
         path = self.paths[index]
         if os.path.exists(path + 'data_f32.pkl'):
+            start_load = time.time()
             x, y = pkload(path + 'data_f32.pkl')
+            print("It takes {:.2f} s to load pkl file".format(time.time()-start_load))
         else:
-            print("Load miss data")
-            x, y = process_f32(path, save=False)
+            start_convert = time.time()
+            x, y = process_f32(path, save=False)            
+            print("It takes {:.2f} s to proccess miss data".format(time.time()-start_convert))
         # print(x.shape, y.shape)#(240, 240, 155, 4) (240, 240, 155)
         # transforms work with nhwtc
         x, y = x[None, ...], y[None, ...]
