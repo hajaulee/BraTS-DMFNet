@@ -23,10 +23,10 @@ hgg = [os.path.join('HGG', f) for f in hgg]
 lgg = os.listdir(os.path.join(root, 'LGG'))
 lgg = [os.path.join('LGG', f) for f in lgg]
 
-print("Original size: HGG:{}, LGG{}".format(len(hgg), len(lgg)))
+print("Original size: HGG:{}, LGG:{}, Total:{}".format(len(hgg), len(lgg), len(hgg) + len(lgg)))
 hgg = hgg[:int(limit*len(hgg))]
 lgg = lgg[:int(limit*len(lgg))]
-print("Limited size: HGG:{}, LGG{}".format(len(hgg), len(lgg)))
+print("Limited size: HGG:{}, LGG:{}, Total:{}".format(len(hgg), len(lgg), len(hgg) + len(lgg)))
 X = hgg + lgg
 Y = [1] * len(hgg) + [0] * len(lgg)
 
