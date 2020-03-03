@@ -24,7 +24,7 @@ opt: Adadelta
 opt_params:
   lr: 1e-3
   weight_decay: 1e-5
-  amsgrad: true
+  # amsgrad: true
 
 workers: 8
 
