@@ -2,7 +2,7 @@
 Load the 'nii' file and save as pkl file.
 Carefully check your path please.
 """
-
+import time
 import os
 import pickle
 import sys
