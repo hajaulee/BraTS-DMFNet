@@ -118,8 +118,12 @@ def main():
     losses = AverageMeter()
     torch.set_grad_enabled(True)
 
+    start_epoch = time.time()
     for i, data in enumerate(train_loader, args.start_iter):
-
+        if int(i / enum_batches) + 1 != elapsed_bsize:
+            print("New epoch: ", elapsed_bsize + 1)
+            print("Time cost: {0:.2f}s/epoch".format(time.time() - start_epoch))
+            start_epoch = time.time()
         elapsed_bsize = int(i / enum_batches) + 1
         epoch = int((i + 1) / enum_batches)
         setproctitle.setproctitle("Epoch:{}/{}".format(elapsed_bsize, args.num_epochs))
