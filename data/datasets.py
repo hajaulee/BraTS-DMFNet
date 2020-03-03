@@ -31,11 +31,11 @@ class BraTSDataset(Dataset):
         if os.path.exists(path + 'data_f32.pkl'):
             start_load = time.time()
             x, y = pkload(path + 'data_f32.pkl')
-            print("It takes {:.2f} s to load pkl file".format(time.time()-start_load))
+            # print("It takes {:.2f} s to load pkl file".format(time.time()-start_load))
         else:
             start_convert = time.time()
             x, y = process_f32(path, save=False)            
-            print("It takes {:.2f} s to proccess miss data".format(time.time()-start_convert))
+            # print("It takes {:.2f} s to proccess miss data".format(time.time()-start_convert))
         # print(x.shape, y.shape)#(240, 240, 155, 4) (240, 240, 155)
         # transforms work with nhwtc
         x, y = x[None, ...], y[None, ...]
