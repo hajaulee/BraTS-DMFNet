@@ -64,6 +64,7 @@ def write(data, fname, root):
 
 def process_f32(path, save=True):
     """ Set all Voxels that are outside of the brain mask to 0"""
+    start = time.time()
     label = np.array(nib_load(path + 'seg.nii.gz'), dtype='uint8', order='C')
     images = np.stack([
         np.array(nib_load(path + modal + '.nii.gz'), dtype='float32', order='C')
@@ -89,8 +90,8 @@ def process_f32(path, save=True):
         images[..., k] = x
     if save:
         output = path + 'data_f32.pkl'
-        print("saving:", output)
         savepkl(data=(images, label), path=output)
+        print("It takes {0:.2f}s to save:{}".format(time.time() -start, output))
     return images, label
 
 
