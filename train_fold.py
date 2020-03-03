@@ -119,6 +119,7 @@ def main():
     torch.set_grad_enabled(True)
 
     start_epoch = time.time()
+    elapsed_bsize = 0
     for i, data in enumerate(train_loader, args.start_iter):
         if int(i / enum_batches) + 1 != elapsed_bsize:
             print("New epoch: ", elapsed_bsize + 1)
