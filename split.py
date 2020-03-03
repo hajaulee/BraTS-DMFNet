@@ -3,7 +3,7 @@ The code will split the training set into k-fold for cross-validation
 """
 
 import os
-
+import sys
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
 
@@ -16,12 +16,17 @@ def write(data, fname, root=root):
     with open(fname, 'w') as f:
         f.write('\n'.join(data))
 
+limit = float(sys.argv[1])
 
 hgg = os.listdir(os.path.join(root, 'HGG'))
 hgg = [os.path.join('HGG', f) for f in hgg]
 lgg = os.listdir(os.path.join(root, 'LGG'))
 lgg = [os.path.join('LGG', f) for f in lgg]
 
+print("Original size: HGG:{}, LGG{}".format(len(hgg), len(lgg)))
+hgg = [:int(limit*len(hgg))]
+lgg = [:int(limit*len(lgg))]
+print("Limited size: HGG:{}, LGG{}".format(len(hgg), len(lgg)))
 X = hgg + lgg
 Y = [1] * len(hgg) + [0] * len(lgg)
 

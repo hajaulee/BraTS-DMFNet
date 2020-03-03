@@ -111,6 +111,7 @@ def doit(dset, limit=1):
 
 if __name__ == "__main__":
     limit = float(sys.argv[1])
-    doit(train_set, limit=limit)
-    doit(valid_set, limit=limit)
+    doit(train_set)
+    # doit(train_set, limit=limit)
+    # doit(valid_set, limit=limit)
     # doit(test_set)
