@@ -91,7 +91,7 @@ def process_f32(path, save=True):
     if save:
         output = path + 'data_f32.pkl'
         savepkl(data=(images, label), path=output)
-        print("It takes {0:.2f}s to save:{}".format(time.time() -start, output))
+        print("It takes {:.2f}s to save:{}".format(time.time() -start, output))
     return images, label
 
 
