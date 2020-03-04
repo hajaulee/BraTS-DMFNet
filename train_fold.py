@@ -163,7 +163,14 @@ def main():
                 'optim_dict': optimizer.state_dict(),
             },
                 file_name)
-
+            
+            file_name = os.path.join(ckpts, 'model_last.pth')
+            torch.save({
+                'iter': i,
+                'state_dict': model.state_dict(),
+                'optim_dict': optimizer.state_dict(),
+            },
+                file_name)
         # validation
         if (i + 1) % int(enum_batches * args.valid_freq) == 0 \
                 or (i + 1) % int(enum_batches * (args.num_epochs - 1)) == 0 \
