@@ -44,7 +44,7 @@ X = hgg + lgg
 Y = [1] * len(hgg) + [0] * len(lgg)
 
 write(X, 'all.txt')
-
+shutil.copy(os.path.join(root,'all.txt'), os.path.join(backup, 'all.txt'))
 X, Y = np.array(X), np.array(Y)
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=2018)
@@ -55,6 +55,11 @@ for k, (train_index, valid_index) in enumerate(skf.split(Y, Y)):
 
     write(train_list, 'train_{}.txt'.format(k))
     write(valid_list, 'valid_{}.txt'.format(k))
+
+    shutil.copy(os.path.join(root,'train_{}.txt'.format(k)),
+                            os.path.join(backup, 'train_{}.txt'.format(k)))
+    shutil.copy(os.path.join(root,'valid_{}.txt'.format(k)), 
+                            os.path.join(backup, 'valid_{}.txt'.format(k)))
 
 valid = os.listdir(os.path.join(valid_data_dir))
 valid = [f for f in valid if not (f.endswith('.csv') or f.endswith('.txt'))]
