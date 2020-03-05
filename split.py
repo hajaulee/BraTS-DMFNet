@@ -21,8 +21,8 @@ if len(backup_files) != 0:
         with open(os.path.join(root, file), 'r') as f:
             for line in f:
                 count += 1
-            print("File {} has {} lines.".format(file, count)
-    return None
+            print("File {} has {} lines.".format(file, count))
+    sys.exit()
 
 def write(data, fname, root=root):
     fname = os.path.join(root, fname)
