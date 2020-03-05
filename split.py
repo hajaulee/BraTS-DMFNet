@@ -6,10 +6,23 @@ import os
 import sys
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
+import shutil
 
 root = '../data/2018/MICCAI_BraTS_2018_Data_Training'
 valid_data_dir = '../data/2018/MICCAI_BraTS_2018_Data_Validation'
 
+backup = '../2018/datasets'
+backup_files = os.listdir(backup)
+if len(backup_files) != 0:
+    print("Copy from backup")
+    for file in backup_files:
+        shutil.copy(os.path.join(backup, file), os.path.join(root, file))
+        count=0
+        with open(os.path.join(root, file), 'r') as f:
+        for line in f:
+            count += 1
+        print("File {} has {} lines.".format(file, count)
+    exit(0)
 
 def write(data, fname, root=root):
     fname = os.path.join(root, fname)
