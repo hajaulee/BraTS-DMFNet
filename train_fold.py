@@ -1,19 +1,17 @@
 # coding=utf-8
+import sys
 import argparse
 import logging
 import os
 import random
 import time
-
 import torch
 import torch.backends.cudnn as cudnn
 import torch.optim
 from torch.utils.data import DataLoader
 
-cudnn.benchmark = True
-
 import numpy as np
-
+import setproctitle
 import models
 from data import datasets
 from data.sampler import CycleSampler
@@ -21,8 +19,9 @@ from data.data_utils import init_fn
 from utils import Parser, criterions
 
 from predict import validate_softmax, AverageMeter
-import setproctitle  # pip install setproctitle
 
+# pip install setproctitle
+cudnn.benchmark = True
 parser = argparse.ArgumentParser()
 parser.add_argument('-cfg', '--cfg', default='3DUNet_dice_fold0', required=True, type=str,
                     help='Your detailed configuration of the network')
@@ -45,16 +44,18 @@ args.resume = os.path.join(ckpts, args.restore)  # specify the epoch
 def main():
     # os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     assert torch.cuda.is_available(), "Currently, we only support CUDA version"
-
+    cuda_ids = [2]
     torch.manual_seed(args.seed)
     # torch.cuda.manual_seed(args.seed)
     random.seed(args.seed)
     np.random.seed(args.seed)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("Cuda:", torch.cuda.device_count())
+    device = torch.device("cuda:" + ','.join(map(str, cuda_ids)) if torch.cuda.is_available() else "cpu")
     Network = getattr(models, args.net)  #
     model = Network(**args.net_params)
-    model = torch.nn.DataParallel(model).to(device)
+    # model = torch.nn.DataParallel(model).to(device)
+    model = torch.nn.DataParallel(model, device_ids=cuda_ids)  # .cuda()
     optimizer = getattr(torch.optim, args.opt)(model.parameters(), **args.opt_params)
     criterion = getattr(criterions, args.criterion)
 
@@ -193,7 +194,7 @@ def main():
                     snapshot=False,
                     postprocess=False,
                     cpu_only=False)
-
+                # print(scores)
         msg = 'Iter {0:}, Epoch {1:.4f}, Loss {2:.7f}'.format(
             i + 1, (i + 1) / enum_batches, losses.avg)
 
