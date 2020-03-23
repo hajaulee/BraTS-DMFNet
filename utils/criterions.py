@@ -38,6 +38,14 @@ def dice(output, target, eps=1e-5):  # soft dice loss
     return 1.0 - num / den
 
 
+def f1_based_dice(output, target, eps=1):
+    target = target.float()
+    num = 2*(output*target).sum() + eps
+    # num = 2 * (output * target).sum()
+    den = num + 1.0 - output.sum()
+    return 1.0 - num / den
+
+
 def sigmoid_dice_loss(output, target, alpha=1e-5):
     # output: [-1,3,H,W,T]
     # target: [-1,H,W,T] noted that it includes 0,1,2,4 here
@@ -54,6 +62,17 @@ def softmax_dice_loss(output, target, eps=1e-5):  #
     loss1 = dice(output[:, 1, ...], (target == 1).float())
     loss2 = dice(output[:, 2, ...], (target == 2).float())
     loss3 = dice(output[:, 3, ...], (target == 4).float())
+    logging.info('1:{:.4f} | 2:{:.4f} | 4:{:.4f}'.format(1 - loss1.data, 1 - loss2.data, 1 - loss3.data))
+
+    return loss1 + loss2 + loss3
+
+
+def softmax_f1_based_dice_loss(output, target):  #
+    # output : [bsize,c,H,W,D]
+    # target : [bsize,H,W,D]
+    loss1 = f1_based_dice(output[:, 1, ...], (target == 1).float())
+    loss2 = f1_based_dice(output[:, 2, ...], (target == 2).float())
+    loss3 = f1_based_dice(output[:, 3, ...], (target == 4).float())
     logging.info('1:{:.4f} | 2:{:.4f} | 4:{:.4f}'.format(1 - loss1.data, 1 - loss2.data, 1 - loss3.data))
 
     return loss1 + loss2 + loss3
