@@ -12,7 +12,27 @@ import torch.nn.functional as F
 cudnn.benchmark = True
 
 path = os.path.dirname(__file__)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
+
+import logging
+
+# create logger with 'spam_application'
+logger = logging.getLogger('brain_tumor')
+logger.setLevel(logging.DEBUG)
+# create file handler which logs even debug messages
+fh = logging.FileHandler('brain_tumor.log')
+fh.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.ERROR)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
+logger.addHandler(ch)
+
 
 # dice socre is equal to f1 score
 def dice_score(o, t, eps=1e-8):
@@ -187,12 +207,12 @@ def validate_softmax(
                                       Snapshot_img[:, :, :, frame])
 
         logging.info(msg)
-
+        logger.info(msg)
     if scoring:
         msg = 'Average scores:'
         msg += ', '.join(['{}: {:.4f}'.format(k, v) for k, v in zip(keys, vals.avg)])
         logging.info(msg)
-
+        logger.info(msg)
     computational_runtime(runtimes)
 
     model.train()
