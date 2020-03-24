@@ -1,4 +1,5 @@
-net: DMFNet
+#net: DMFNet
+net: AttentionDMFNet
 net_params:
   c: 4
   n: 32
@@ -7,8 +8,8 @@ net_params:
   norm: bn
   num_classes: 4
 
-#criterion: GeneralizedDiceLoss
-criterion: softmax_f1_based_dice_loss
+criterion: GeneralizedDiceLoss
+#criterion: softmax_f1_based_dice_loss
 
 weight_type: square
 eps: 1e-5
