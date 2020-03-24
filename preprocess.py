@@ -2,13 +2,13 @@
 Load the 'nii' file and save as pkl file.
 Carefully check your path please.
 """
-
+import time
 import os
 import pickle
-
+import sys
 import nibabel as nib
 import numpy as np
-
+import argparse
 from utils import Parser
 
 args = Parser()
@@ -57,9 +57,14 @@ def savepkl(data, path):
     with open(path, 'wb') as f:
         pickle.dump(data, f)
 
+def write(data, fname, root):
+    fname = os.path.join(root, fname)
+    with open(fname, 'w') as f:
+        f.write('\n'.join(data))
 
-def process_f32(path):
+def process_f32(path, save=True):
     """ Set all Voxels that are outside of the brain mask to 0"""
+    start = time.time()
     label = np.array(nib_load(path + 'seg.nii.gz'), dtype='uint8', order='C')
     images = np.stack([
         np.array(nib_load(path + modal + '.nii.gz'), dtype='float32', order='C')
@@ -83,23 +88,38 @@ def process_f32(path):
         x /= y.std()
 
         images[..., k] = x
-
-    output = path + 'data_f32.pkl'
-    print("saving:", output)
-    savepkl(data=(images, label), path=output)
+    if save:
+        output = path + 'data_f32.pkl'
+        savepkl(data=(images, label), path=output)
+        print("It takes {:.2f}s to save:{}".format(time.time() -start, output))
     return images, label
 
 
-def doit(dset):
+def doit(dset, limit=1, change_size=False):
     root = dset['root']
     file_list = os.path.join(root, dset['flist'])
     subjects = open(file_list).read().splitlines()
+    
+    print("Total samples number:", len(subjects))
+    subjects = subjects[:int(limit*len(subjects))]
+    print("Limited samples number:", len(subjects))
+    if change_size:
+        write(subjects, dset['flist'], root)
+    else:
+        print("No change in file list")
     names = [sub.split('/')[-1] for sub in subjects]
     paths = [os.path.join(root, sub, name + '_') for sub, name in zip(subjects, names)]
     for path in paths:
         process_f32(path)
 
-
-doit(train_set)
-doit(valid_set)
-# doit(test_set)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-limit', '--limit', default=1, type=float,
+                    help='Limit rate')
+    parser.add_argument('-change_size', '--change_size', default=False, type=bool,
+                    help='Save new dataset size')
+    ## parse arguments
+    args = parser.parse_args()
+    doit(train_set, limit=args.limit, change_size=args.change_size)
+    # doit(valid_set, limit=limit)
+    # doit(test_set)

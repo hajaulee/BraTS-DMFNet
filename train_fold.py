@@ -1,19 +1,17 @@
 # coding=utf-8
+import sys
 import argparse
 import logging
 import os
 import random
 import time
-
 import torch
 import torch.backends.cudnn as cudnn
 import torch.optim
 from torch.utils.data import DataLoader
 
-cudnn.benchmark = True
-
 import numpy as np
-
+import setproctitle
 import models
 from data import datasets
 from data.sampler import CycleSampler
@@ -21,8 +19,9 @@ from data.data_utils import init_fn
 from utils import Parser, criterions
 
 from predict import validate_softmax, AverageMeter
-import setproctitle  # pip install setproctitle
 
+# pip install setproctitle
+cudnn.benchmark = True
 parser = argparse.ArgumentParser()
 parser.add_argument('-cfg', '--cfg', default='3DUNet_dice_fold0', required=True, type=str,
                     help='Your detailed configuration of the network')
@@ -45,16 +44,20 @@ args.resume = os.path.join(ckpts, args.restore)  # specify the epoch
 def main():
     # os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     assert torch.cuda.is_available(), "Currently, we only support CUDA version"
-
+    cuda_ids = [0]
     torch.manual_seed(args.seed)
     # torch.cuda.manual_seed(args.seed)
     random.seed(args.seed)
     np.random.seed(args.seed)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    print("Cuda number:", torch.cuda.device_count())
+    device = torch.device("cuda:" + ','.join(map(str, cuda_ids)) if torch.cuda.is_available() else "cpu")
+    print("Using:", device)
     Network = getattr(models, args.net)  #
     model = Network(**args.net_params)
-    model = torch.nn.DataParallel(model).to(device)
+    # model = torch.nn.DataParallel(model).to(device)
+    model = torch.nn.DataParallel(model, device_ids=cuda_ids)  # .cuda()
     optimizer = getattr(torch.optim, args.opt)(model.parameters(), **args.opt_params)
     criterion = getattr(criterions, args.criterion)
 
@@ -118,8 +121,13 @@ def main():
     losses = AverageMeter()
     torch.set_grad_enabled(True)
 
+    start_epoch = time.time()
+    elapsed_bsize = 0
     for i, data in enumerate(train_loader, args.start_iter):
-
+        if int(i / enum_batches) + 1 != elapsed_bsize:
+            print("New epoch: ", elapsed_bsize + 1)
+            print("Time cost: {:.2f}s/epoch".format(time.time() - start_epoch))
+            start_epoch = time.time()
         elapsed_bsize = int(i / enum_batches) + 1
         epoch = int((i + 1) / enum_batches)
         setproctitle.setproctitle("Epoch:{}/{}".format(elapsed_bsize, args.num_epochs))
@@ -129,7 +137,7 @@ def main():
         # data = [t.cuda(non_blocking=True) for t in data]
         data = [t.to(device) for t in data]
         x, target = data[:2]
-
+        # print(x.shape, target.shape)
         output = model(x)
         if not args.weight_type:  # compatible for the old version
             args.weight_type = 'square'
@@ -158,7 +166,14 @@ def main():
                 'optim_dict': optimizer.state_dict(),
             },
                 file_name)
-
+            
+            file_name = os.path.join(ckpts, 'model_last.pth')
+            torch.save({
+                'iter': i,
+                'state_dict': model.state_dict(),
+                'optim_dict': optimizer.state_dict(),
+            },
+                file_name)
         # validation
         if (i + 1) % int(enum_batches * args.valid_freq) == 0 \
                 or (i + 1) % int(enum_batches * (args.num_epochs - 1)) == 0 \
@@ -181,7 +196,7 @@ def main():
                     snapshot=False,
                     postprocess=False,
                     cpu_only=False)
-
+                # print(scores)
         msg = 'Iter {0:}, Epoch {1:.4f}, Loss {2:.7f}'.format(
             i + 1, (i + 1) / enum_batches, losses.avg)
 

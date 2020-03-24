@@ -4,6 +4,10 @@ import torch.nn as nn
 try:
     from .sync_batchnorm import SynchronizedBatchNorm3d
 except:
+    try:
+        from sync_batchnorm import SynchronizedBatchNorm3d
+    except:
+        pass
     pass
 
 
@@ -245,8 +249,8 @@ class DMFNet(MFNet):  # softmax
 if __name__ == '__main__':
     import os
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    device = torch.device('cuda:0')
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     x = torch.rand((1, 4, 128, 128, 128), device=device)  # [bsize,channels,Height,Width,Depth]
     model = DMFNet(c=4, groups=16, norm='sync_bn', num_classes=4)
     model.cuda(device)
