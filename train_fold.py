@@ -44,14 +44,16 @@ args.resume = os.path.join(ckpts, args.restore)  # specify the epoch
 def main():
     # os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     assert torch.cuda.is_available(), "Currently, we only support CUDA version"
-    cuda_ids = [2]
+    cuda_ids = [0]
     torch.manual_seed(args.seed)
     # torch.cuda.manual_seed(args.seed)
     random.seed(args.seed)
     np.random.seed(args.seed)
 
-    print("Cuda:", torch.cuda.device_count())
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    print("Cuda number:", torch.cuda.device_count())
     device = torch.device("cuda:" + ','.join(map(str, cuda_ids)) if torch.cuda.is_available() else "cpu")
+    print("Using:", device)
     Network = getattr(models, args.net)  #
     model = Network(**args.net_params)
     # model = torch.nn.DataParallel(model).to(device)
@@ -135,7 +137,7 @@ def main():
         # data = [t.cuda(non_blocking=True) for t in data]
         data = [t.to(device) for t in data]
         x, target = data[:2]
-
+        # print(x.shape, target.shape)
         output = model(x)
         if not args.weight_type:  # compatible for the old version
             args.weight_type = 'square'
