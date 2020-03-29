@@ -17,7 +17,7 @@ dataset: BraTSDataset
 seed: 1024
 batch_size: 8
 num_epochs: 1000
-save_freq: 10     # save every 10 epochs
+save_freq: 5     # save every 5 epochs
 valid_freq: 10   # validate every 10 epochs
 start_iter: 0
 
