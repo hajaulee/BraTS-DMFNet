@@ -18,15 +18,15 @@ from data.sampler import CycleSampler
 from data.data_utils import init_fn
 from utils import Parser, criterions
 
-from predict import validate_softmax, AverageMeter
+from predict import set_predict_device, validate_softmax, AverageMeter
 
 # pip install setproctitle
 cudnn.benchmark = True
 parser = argparse.ArgumentParser()
 parser.add_argument('-cfg', '--cfg', default='3DUNet_dice_fold0', required=True, type=str,
                     help='Your detailed configuration of the network')
-# parser.add_argument('-gpu', '--gpu', default='0', type=str, required=True,
-#                     help='Supprot one GPU & multiple GPUs.')
+parser.add_argument('-gpu', '--gpu', default='0', type=str, required=True,
+                    help='Supprot one GPU & multiple GPUs.')
 parser.add_argument('-batch_size', '--batch_size', default=1, type=int, help='Batch size')
 parser.add_argument('-restore', '--restore', default='model_last.pth', type=str)  # model_last.pth
 parser.add_argument('-output_path', '--output_path', default='ckpts', type=str)
@@ -39,12 +39,12 @@ args = Parser(args.cfg, log='train').add_args(args)
 
 ckpts = args.makedir()
 args.resume = os.path.join(ckpts, args.restore)  # specify the epoch
+cuda_ids = [int(i) for i in args.gpu.split(',')]
 
-
+set_predict_device(args.gpu)
 def main():
     # os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     assert torch.cuda.is_available(), "Currently, we only support CUDA version"
-    cuda_ids = [0]
     torch.manual_seed(args.seed)
     # torch.cuda.manual_seed(args.seed)
     random.seed(args.seed)

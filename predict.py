@@ -8,12 +8,9 @@ import numpy as np
 import scipy.misc
 import torch.backends.cudnn as cudnn
 import torch.nn.functional as F
-
 cudnn.benchmark = True
 
 path = os.path.dirname(__file__)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
 import logging
 
 # create logger with 'spam_application'
@@ -32,7 +29,11 @@ ch.setFormatter(formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
 logger.addHandler(ch)
-
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+def set_predict_device(cuda_ids):
+    global device
+    device = torch.device("cuda:"+cuda_ids if torch.cuda.is_available() else "cpu")
+    print("Predict with device:", device)
 
 # dice socre is equal to f1 score
 def dice_score(o, t, eps=1e-8):
