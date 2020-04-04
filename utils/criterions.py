@@ -123,12 +123,12 @@ def GeneralizedDiceLoss(output, target, eps=1e-5, weight_type='square'):  # Gene
     return 1 - 2. * intersect_sum / denominator_sum
 
 def SurfaceLoss(output, dist_maps):
-    assert simplex(probs)
+    assert simplex(output)
     assert not one_hot(dist_maps)
     idc = [1,2,3]
-    pc = probs[:, idc, ...].type(torch.float32)
+    pc = output[:, idc, ...].type(torch.float32)
     dc = dist_maps[:, idc, ...].type(torch.float32)
-
+    print(pc.shape, dc.shape)
     multipled = einsum("bcwhd,bcwhd->bcwhd", pc, dc)
 
     loss = multipled.mean()

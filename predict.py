@@ -17,7 +17,7 @@ import logging
 logger = logging.getLogger('brain_tumor')
 logger.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
-fh = logging.FileHandler('brain_tumor.log')
+fh = logging.FileHandler('brain_tumor.log.txt')
 fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler()

@@ -136,7 +136,7 @@ def main():
 
         # data = [t.cuda(non_blocking=True) for t in data]
         data = [t.to(device) for t in data]
-        x, target = data[:2]
+        x, target, dist_maps = data[:3]
         # print(x.shape, target.shape)
         output = model(x)
         if not args.weight_type:  # compatible for the old version
@@ -144,7 +144,7 @@ def main():
 
         # loss = criterion(output, target, args.eps,args.weight_type)
         # loss = criterion(output, target,args.alpha,args.gamma) # for focal loss
-        loss = criterion(output, target, *args.kwargs)
+        loss = criterion(output, target, dist_maps, *args.kwargs)
 
         # measure accuracy and record loss
         losses.update(loss.item(), target.numel())
