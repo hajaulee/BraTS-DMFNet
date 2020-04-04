@@ -1,10 +1,15 @@
 import logging
 
 import torch
+from torch import Tensor, einsum
 import torch.nn.functional as F
 from utils import simplex, one_hot
 
-__all__ = ['sigmoid_dice_loss', 'softmax_dice_loss', 'GeneralizedDiceLoss', 'FocalLoss']
+__all__ = ['sigmoid_dice_loss', 
+            'softmax_dice_loss', 
+            'GeneralizedDiceLoss', 
+            'FocalLoss',
+            'GD_Boundary']
 
 cross_entropy = F.cross_entropy
 
