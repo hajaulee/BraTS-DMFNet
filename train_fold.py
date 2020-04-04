@@ -195,7 +195,8 @@ def main():
                     use_TTA=False,
                     snapshot=False,
                     postprocess=False,
-                    cpu_only=False)
+                    cpu_only=False,
+                    epoch=i // enum_batches)
                 # print(scores)
         msg = 'Iter {0:}, Epoch {1:.4f}, Loss {2:.7f}'.format(
             i + 1, (i + 1) / enum_batches, losses.avg)

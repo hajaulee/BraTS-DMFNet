@@ -8,9 +8,11 @@ net_params:
   norm: bn
   num_classes: 4
 
-criterion: GeneralizedDiceLoss
+# criterion: GeneralizedDiceLoss
 #criterion: softmax_f1_based_dice_loss
+criterion: GD_Boundary
 
+alpha: 0.99
 weight_type: square
 eps: 1e-5
 dataset: BraTSDataset

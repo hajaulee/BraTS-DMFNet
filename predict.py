@@ -81,7 +81,8 @@ def validate_softmax(
         save_format=None,  # ['nii','npy'], use 'nii' as default. Its purpose is for submission.
         snapshot=False,  # for visualization. Default false. It is recommended to generate the visualized figures.
         postprocess=False,  # Defualt False, when use postprocess, the score of dice_ET would be changed.
-        cpu_only=False):
+        cpu_only=False,
+        **kwargs):
     assert cfg is not None
     H, W, T = 240, 240, 155
     model.eval()
@@ -210,7 +211,8 @@ def validate_softmax(
         logging.info(msg)
         logger.info(msg)
     if scoring:
-        msg = 'Average scores:'
+        msg = 'Epochs ' + str(kwargs['epoch'])
+        msg += 'Average scores:'
         msg += ', '.join(['{}: {:.4f}'.format(k, v) for k, v in zip(keys, vals.avg)])
         logging.info(msg)
         logger.info(msg)

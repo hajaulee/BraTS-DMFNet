@@ -2,6 +2,7 @@ import logging
 
 import torch
 import torch.nn.functional as F
+from utils import simplex, one_hot
 
 __all__ = ['sigmoid_dice_loss', 'softmax_dice_loss', 'GeneralizedDiceLoss', 'FocalLoss']
 
@@ -116,6 +117,23 @@ def GeneralizedDiceLoss(output, target, eps=1e-5, weight_type='square'):  # Gene
 
     return 1 - 2. * intersect_sum / denominator_sum
 
+class SurfaceLoss(output, dist_maps):
+    assert simplex(probs)
+    assert not one_hot(dist_maps)
+    idc = [1,2,3]
+    pc = probs[:, idc, ...].type(torch.float32)
+    dc = dist_maps[:, idc, ...].type(torch.float32)
+
+    multipled = einsum("bcwhd,bcwhd->bcwhd", pc, dc)
+
+    loss = multipled.mean()
+
+    return loss
+
+def GD_Boundary(output, target, dist_maps, eps=1e-5, weight_type='square', alpha=0.99):
+    loss1 = GeneralizedDiceLoss(output, target, eps, weight_type)
+    loss2 = SurfaceLoss(output, dist_maps)
+    return alpha * loss1 + (1. - alpha) * loss2
 
 def expand_target(x, n_class, mode='softmax'):
     """

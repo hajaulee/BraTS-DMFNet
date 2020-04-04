@@ -10,7 +10,7 @@ import nibabel as nib
 import numpy as np
 import argparse
 from utils import Parser
-
+from utils import * 
 args = Parser()
 modalities = ('flair', 't1ce', 't1', 't2')
 
@@ -28,6 +28,16 @@ test_set = {
     'root': '../data/2018/MICCAI_BraTS_2018_Data_TTest',
     'flist': 'test.txt',
 }
+
+dist_map_transform = transforms.Compose([
+        lambda img: np.array(img)[np.newaxis, ...],
+        lambda nd: torch.tensor(nd, dtype=torch.int64),
+        partial(class2one_hot, C=4),
+        itemgetter(0),
+        lambda t: t.cpu().numpy(),
+        one_hot2dist,
+        lambda nd: torch.tensor(nd, dtype=torch.float32)
+    ])
 
 
 def nib_load(file_name):
@@ -66,6 +76,7 @@ def process_f32(path, save=True):
     """ Set all Voxels that are outside of the brain mask to 0"""
     start = time.time()
     label = np.array(nib_load(path + 'seg.nii.gz'), dtype='uint8', order='C')
+    dist_map = dist_map_transform(label)
     images = np.stack([
         np.array(nib_load(path + modal + '.nii.gz'), dtype='float32', order='C')
         for modal in modalities], -1)
@@ -92,7 +103,7 @@ def process_f32(path, save=True):
         output = path + 'data_f32.pkl'
         savepkl(data=(images, label), path=output)
         print("It takes {:.2f}s to save:{}".format(time.time() -start, output))
-    return images, label
+    return images, label, dist_map
 
 
 def doit(dset, limit=1, change_size=False):

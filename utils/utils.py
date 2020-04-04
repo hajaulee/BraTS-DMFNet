@@ -3,6 +3,66 @@ import os
 import json
 import difflib
 import zipfile
+import numpy as np
+from torchvision import transforms
+from functools import partial
+import torch
+from typing import Any, Callable, Iterable, List, Set, Tuple, TypeVar, Union
+from torch import Tensor
+from operator import itemgetter
+from scipy.ndimage import distance_transform_edt as distance
+
+
+
+# Assert utils
+def uniq(a: Tensor) -> Set:
+    return set(torch.unique(a.cpu()).numpy())
+
+
+def sset(a: Tensor, sub: Iterable) -> bool:
+    return uniq(a).issubset(sub)
+
+
+def eq(a: Tensor, b) -> bool:
+    return torch.eq(a, b).all()
+
+
+def simplex(t: Tensor, axis=1) -> bool:
+    _sum = t.sum(axis).type(torch.float32)
+    _ones = torch.ones_like(_sum, dtype=torch.float32)
+    return torch.allclose(_sum, _ones)
+
+
+def one_hot(t: Tensor, axis=1) -> bool:
+    return simplex(t, axis) and sset(t, [0, 1])
+
+def one_hot2dist(seg: np.ndarray) -> np.ndarray:
+    assert one_hot(torch.Tensor(seg), axis=0)
+    C: int = len(seg)
+
+    res = np.zeros_like(seg)
+    for c in range(C):
+        posmask = seg[c].astype(np.bool)
+
+        if posmask.any():
+            negmask = ~posmask
+            res[c] = distance(negmask) * negmask - (distance(posmask) - 1) * posmask
+    return res
+
+
+def class2one_hot(seg: Tensor, C: int) -> Tensor:
+    if len(seg.shape) == 2:  # Only w, h, used by the dataloader
+        seg = seg.unsqueeze(dim=0)
+    
+    seg[seg == 4] = 3  # label [4] -> [3]    
+    assert sset(seg, list(range(C)))
+
+    b, w, h, d = seg.shape  # type: Tuple[int, int, int, int]
+    res = torch.stack([seg == c for c in range(C)], dim=1).type(torch.int32)
+    assert res.shape == (b, C, w, h, d)
+    assert one_hot(res)
+
+    return res
 
 
 def get_args():
