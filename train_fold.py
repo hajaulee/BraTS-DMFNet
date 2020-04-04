@@ -40,7 +40,7 @@ args = Parser(args.cfg, log='train').add_args(args)
 ckpts = args.makedir()
 args.resume = os.path.join(ckpts, args.restore)  # specify the epoch
 cuda_ids = [int(i) for i in args.gpu.split(',')]
-
+print(args)
 set_predict_device(args.gpu)
 def main():
     # os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu

@@ -9,8 +9,10 @@ import sys
 import nibabel as nib
 import numpy as np
 import argparse
+from functools import partial
+from torchvision import transforms
 from utils import Parser
-from utils import * 
+from utils.utils import *
 args = Parser()
 modalities = ('flair', 't1ce', 't1', 't2')
 

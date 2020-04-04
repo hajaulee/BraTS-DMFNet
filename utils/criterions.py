@@ -3,7 +3,7 @@ import logging
 import torch
 from torch import Tensor, einsum
 import torch.nn.functional as F
-from utils import simplex, one_hot
+from utils.utils import simplex, one_hot
 
 __all__ = ['sigmoid_dice_loss', 
             'softmax_dice_loss', 
@@ -122,7 +122,7 @@ def GeneralizedDiceLoss(output, target, eps=1e-5, weight_type='square'):  # Gene
 
     return 1 - 2. * intersect_sum / denominator_sum
 
-class SurfaceLoss(output, dist_maps):
+def SurfaceLoss(output, dist_maps):
     assert simplex(probs)
     assert not one_hot(dist_maps)
     idc = [1,2,3]
