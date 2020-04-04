@@ -49,8 +49,8 @@ class BraTSDataset(Dataset):
         else:
             start_convert = time.time()
             x, y= process_f32(path, save=False)            
-            print("It takes {:.2f} s to proccess miss data".format(time.time()-start_convert))
-            print("Convert:", x.shape, y.shape)
+            # print("It takes {:.2f} s to proccess miss data".format(time.time()-start_convert))
+            # print("Convert:", x.shape, y.shape)
         # print(x.shape, y.shape)#(240, 240, 155, 4) (240, 240, 155)
         # transforms work with nhwtc
         x, y = x[None, ...], y[None, ...]
@@ -62,7 +62,7 @@ class BraTSDataset(Dataset):
         y = np.ascontiguousarray(y)
         # print("After ascontiguous:", x.shape, y.shape)  After ascontiguous: (1, 4, 128, 128, 128) (1, 128, 128, 128)
         x, y = torch.from_numpy(x), torch.from_numpy(y)
-        print("Last Result:", x.shape, y.shape, z.shape)
+        # print("Last Result:", x.shape, y.shape, z.shape)
         return x, y, z
 
     def __len__(self):

@@ -128,7 +128,7 @@ def SurfaceLoss(output, dist_maps):
     idc = [1,2,3]
     pc = output[:, idc, ...].type(torch.float32)
     dc = dist_maps[:, idc, ...].type(torch.float32)
-    print(pc.shape, dc.shape)
+    # print(pc.shape, dc.shape)
     multipled = einsum("bcwhd,bcwhd->bcwhd", pc, dc)
 
     loss = multipled.mean()
