@@ -47,21 +47,32 @@ class BraTSDataset(Dataset):
             print("It takes {:.2f} s to load pkl file".format(time.time()-start_load))
             print("Load:", x.shape, y.shape)
         else:
-            start_convert = time.time()
-            x, y= process_f32(path, save=False)            
+            # start_convert = time.time()
+            x, y, z = process_f32(path, save=False)
+            if z.shape.__len__() < 2:
+                z = np.array([[[[1]]]])
+            else:
+                z = z.transpose(1, 2, 3, 0)        
             # print("It takes {:.2f} s to proccess miss data".format(time.time()-start_convert))
             # print("Convert:", x.shape, y.shape)
         # print(x.shape, y.shape)#(240, 240, 155, 4) (240, 240, 155)
         # transforms work with nhwtc
-        x, y = x[None, ...], y[None, ...]
+        x, y, z = x[None, ...], y[None, ...], z[None, ...]
         # print("After None", x.shape, y.shape)  # (1, 240, 240, 155, 4) (1, 240, 240, 155)
-        x, y = self.transforms([x, y])
-        z = dist_map_transform(y[0]).unsqueeze(0)
+        # start_transform = time.time()
+        # print("Before transform:", x.shape, y.shape, z.shape)
+        x, y, z = self.transforms([x, y, z])
+        # print("Transform:", time.time() - start_transform)
+        # start_dist_maps = time.time()
+        # z = dist_map_transform(y[0]).unsqueeze(0)
+        # print("Create dist_maps:", time.time() - start_dist_maps)
+        # print("Size: ", x.shape, y.shape, z_.shape, z.shape)
         # print("After transform, ", x.shape, y.shape)  After transform,  (1, 128, 128, 128, 4) (1, 128, 128, 128)
         x = np.ascontiguousarray(x.transpose(0, 4, 1, 2, 3))  # [Bsize,channels,Height,Width,Depth]
         y = np.ascontiguousarray(y)
+        z = np.ascontiguousarray(z.transpose(0, 4, 1, 2, 3))
         # print("After ascontiguous:", x.shape, y.shape)  After ascontiguous: (1, 4, 128, 128, 128) (1, 128, 128, 128)
-        x, y = torch.from_numpy(x), torch.from_numpy(y)
+        x, y, z = torch.from_numpy(x), torch.from_numpy(y), torch.from_numpy(z)
         # print("Last Result:", x.shape, y.shape, z.shape)
         return x, y, z
 
@@ -70,3 +81,4 @@ class BraTSDataset(Dataset):
 
     def collate(self, batch):
         return [torch.cat(v) for v in zip(*batch)]
+    

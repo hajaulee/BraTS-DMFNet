@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-
+import imageio
 import torch
 import nibabel as nib
 import numpy as np
@@ -168,7 +168,9 @@ def validate_softmax(
 
                     for frame in range(T):
                         os.makedirs(os.path.join(savepath, 'snapshot', name), exist_ok=True)
-                        scipy.misc.imsave(os.path.join(savepath, 'snapshot', name, str(frame) + '.png'),
+                        # scipy.misc.imsave(os.path.join(savepath, 'snapshot', name, str(frame) + '.png'),
+                        #                   Snapshot_img[:, :, :, frame])
+                        imageio.imwrite(os.path.join(savepath, 'snapshot', name, str(frame) + '.png'),
                                           Snapshot_img[:, :, :, frame])
 
         if scoring:
@@ -211,12 +213,13 @@ def validate_softmax(
         logging.info(msg)
         logger.info(msg)
     if scoring:
-        msg = 'Epochs ' + str(kwargs['epoch'])
+        msg = 'Epochs ' + str(kwargs['epoch']) + ': '
         msg += 'Average scores:'
         msg += ', '.join(['{}: {:.4f}'.format(k, v) for k, v in zip(keys, vals.avg)])
         logging.info(msg)
         logger.info(msg)
-    computational_runtime(runtimes)
+    if runtimes != []:
+        computational_runtime(runtimes)
 
     model.train()
     return vals.avg

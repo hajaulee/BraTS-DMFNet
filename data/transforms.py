@@ -17,6 +17,11 @@ class Base(object):
     def tf(self, img, k=0):
         return img
 
+    def tf_(self, img, k=0):
+        if k == 2:
+            return self.tf(img, 0)
+        return self.tf(img, k)
+
     def __call__(self, img, dim=3, reuse=False):  # class -> func()
         # image: nhwtc
         # shape: no first dim
@@ -29,7 +34,7 @@ class Base(object):
             self.sample(*shape)
 
         if isinstance(img, collections.Sequence):
-            return [self.tf(x, k) for k, x in enumerate(img)]  # img:k=0,label:k=1
+            return [self.tf_(x, k) for k, x in enumerate(img)]  # img:k=0,label:k=1
 
         return self.tf(img)
 

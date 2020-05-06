@@ -135,10 +135,10 @@ def SurfaceLoss(output, dist_maps):
 
     return loss
 
-def GD_Boundary(output, target, dist_maps, eps=1e-5, weight_type='square', alpha=0.99):
+def GD_Boundary(output, target, dist_maps, eps=1e-5, weight_type='square', alpha=0.01):
     loss1 = GeneralizedDiceLoss(output, target, eps, weight_type)
     loss2 = SurfaceLoss(output, dist_maps)
-    return alpha * loss1 + (1. - alpha) * loss2
+    return loss1 + alpha * loss2
 
 def expand_target(x, n_class, mode='softmax'):
     """

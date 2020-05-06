@@ -1,0 +1,49 @@
+net: DMFNet
+# net: AttentionDMFNet
+net_params:
+  c: 4
+  n: 32
+  channels: 128
+  groups: 16
+  norm: bn
+  num_classes: 4
+
+# criterion: GeneralizedDiceLoss
+#criterion: softmax_f1_based_dice_loss
+criterion: GD_Boundary
+
+alpha: 0.9
+weight_type: square
+eps: 1e-5
+dataset: BraTSDataset
+seed: 1024
+batch_size: 8
+num_epochs: 1000
+save_freq: 5     # save every 5 epochs
+valid_freq: 20   # validate every 10 epochs
+start_iter: 0
+
+opt: Adam
+# opt: Adadelta
+opt_params:
+  lr: 1e-3
+  weight_decay: 1e-5
+  amsgrad: true
+
+workers: 1
+
+train_list: train_2.txt
+valid_list: valid_2.txt
+train_transforms: # for training
+  Compose([
+    RandCrop3D((128,128,128)),
+    RandomRotion(10),
+    RandomIntensityChange((0.1,0.1)),
+    RandomFlip(0),
+    NumpyType((np.float32, np.int64)),
+    ])
+test_transforms: # for testing
+  Compose([
+    Pad((0, 0, 0, 5, 0)),
+    NumpyType((np.float32, np.int64)),
+    ])

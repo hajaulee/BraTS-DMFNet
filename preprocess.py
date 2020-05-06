@@ -10,6 +10,21 @@ import nibabel as nib
 import numpy as np
 import argparse
 from utils import Parser
+from functools import partial
+from torchvision import transforms
+from utils.utils import *
+
+dist_map_transform = transforms.Compose([
+        lambda img: np.array(img)[np.newaxis, ...],
+        lambda nd: torch.tensor(nd, dtype=torch.int64),
+        partial(class2one_hot, C=4),
+        itemgetter(0),
+        lambda t: t.cpu().numpy(),
+        one_hot2dist,
+        # lambda nd: torch.tensor(nd, dtype=torch.float32)
+    ])
+
+
 args = Parser()
 modalities = ('flair', 't1ce', 't1', 't2')
 
@@ -65,6 +80,14 @@ def process_f32(path, save=True):
     """ Set all Voxels that are outside of the brain mask to 0"""
     start = time.time()
     label = np.array(nib_load(path + 'seg.nii.gz'), dtype='uint8', order='C')
+    if os.path.exists(path + 'dist_maps.nii.gz'):
+        dist_maps = np.array(nib_load(path + 'dist_maps.nii.gz'), dtype='float32', order='C')
+    else:
+        if label != np.array([1]):    
+            dist_maps = dist_map_transform(label)
+            nib.save(nib.Nifti1Image(dist_maps, None), path + 'dist_maps.nii.gz')
+        else:
+            dist_maps = np.array([1])
     images = np.stack([
         np.array(nib_load(path + modal + '.nii.gz'), dtype='float32', order='C')
         for modal in modalities], -1)
@@ -91,7 +114,9 @@ def process_f32(path, save=True):
         output = path + 'data_f32.pkl'
         savepkl(data=(images, label), path=output)
         print("It takes {:.2f}s to save:{}".format(time.time() -start, output))
-    return images, label
+
+    return images, label, dist_maps
+    # return images, label
 
 
 def doit(dset, limit=1, change_size=False):

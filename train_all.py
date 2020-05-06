@@ -4,7 +4,7 @@ import logging
 import os
 import random
 import time
-
+import shutil
 import torch
 import torch.backends.cudnn as cudnn
 import torch.optim
@@ -50,7 +50,7 @@ def main():
     # os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     assert torch.cuda.is_available(), "Currently, we only support CUDA version"
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed(args.seed)
     random.seed(args.seed)
@@ -58,7 +58,7 @@ def main():
 
     Network = getattr(models, args.net)  #
     model = Network(**args.net_params)
-    model = torch.nn.DataParallel(model).to(device)
+    model = torch.nn.DataParallel(model, device_ids=[1]).to(device)
 
     optimizer = getattr(torch.optim, args.opt)(model.parameters(), **args.opt_params)
     criterion = getattr(criterions, args.criterion)
@@ -107,28 +107,38 @@ def main():
     losses = AverageMeter()
     torch.set_grad_enabled(True)
 
+    alpha = 1.01
+    epoch = 1
     for i, data in enumerate(train_loader, args.start_iter):
 
         elapsed_bsize = int(i / enum_batches) + 1
         epoch = int((i + 1) / enum_batches)
+        if alpha > 0.01:
+            alpha = alpha - epoch * 0.008
+        else:
+            alpha = 0.01
+        if int((i + 1) / enum_batches) > epoch:
+            print("Epoch: {}, schedule alpha: {}".format(epoch, alpha))
         setproctitle.setproctitle("Epoch:{}/{}".format(elapsed_bsize, args.num_epochs))
 
         # actual training
         adjust_learning_rate(optimizer, epoch, args.num_epochs, args.opt_params.lr)
 
-        data = [t.cuda(non_blocking=True) for t in data]
-        x, target = data[:2]
+        # data = [t.cuda(non_blocking=True) for t in data]
+        data = [t.to(device) for t in data]
+        x, target, dist_maps = data[:3]
 
         output = model(x)
 
         if not args.weight_type:  # compatible for the old version
             args.weight_type = 'square'
 
-        if args.criterion_kwargs is not None:
-            loss = criterion(output, target, **args.criterion_kwargs)
-        else:
-            loss = criterion(output, target)
+        # if args.criterion_kwargs is not None:
+        #     loss = criterion(output, target, dist_maps, **args.criterion_kwargs)
+        # else:
+        #     loss = criterion(output, target, dist_maps)
 
+        loss = criterion(output, target, dist_maps, alpha=alpha)
         # measure accuracy and record loss
         losses.update(loss.item(), target.numel())
 
@@ -149,7 +159,7 @@ def main():
                 'optim_dict': optimizer.state_dict(),
             },
                 file_name)
-
+            shutil.copyfile(file_name, os.path.join(ckpts, 'model_last.pth'))
         msg = 'Iter {0:}, Epoch {1:.4f}, Loss {2:.7f}'.format(i + 1, (i + 1) / enum_batches, losses.avg)
         logging.info(msg)
 
